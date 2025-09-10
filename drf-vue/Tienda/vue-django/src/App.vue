@@ -6,15 +6,46 @@
         <i class="bi bi-list"></i>
       </button>
       <h1 class="logo-text">LucyBell</h1>
-      <button class="btn btn-icon">
+      <button class="btn btn-icon" @click="toggleCarrito">
         <i class="bi bi-cart"></i>
       </button>
+
     </header>
 
-    <!-- OVERLAY -->
+    <!-- OVERLAYS -->
     <div v-if="sidebarOpen" class="overlay" @click="closeSidebar"></div>
+    <div v-if="carritoOpen" class="overlay" @click="closeCarrito"></div>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR del carrito -->
+    <div :class="['sidebar shadow derecha', { 'active': carritoOpen }]">
+      <div class="p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="sidebar-title">Carrito</h4>
+          <button class="btn btn-icon" @click="closeCarrito">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div v-if="carrito.length === 0">
+          <p>El carrito está vacío 😢</p>
+        </div>
+
+        <div v-else>
+          <div v-for="(item, index) in carrito" :key="index" class="mb-3 p-2 border rounded">
+            <p><strong>Producto:</strong> {{ item.productoId }}</p>
+            <p><strong>Cantidad:</strong> {{ item.cantidad }}</p>
+            <p><strong>Color:</strong> {{ item.color }}</p>
+            <p><strong>Talle:</strong> {{ item.talle }}</p>
+          </div>
+
+          <button class="btn-comprar w-100 mt-3" @click="finalizarCompra">
+            Finalizar Compra
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR de Productos-->
     <div :class="['sidebar shadow', { 'active': sidebarOpen }]">
       <div class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -96,7 +127,25 @@ import { ref } from "vue"
 
 const sidebarOpen = ref(false)
 const searchQuery = ref("")
+const carritoOpen = ref(false)
+const carrito = ref([]) // ya definimos este array para guardar productos
 
+/* Sidebars */
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
+function closeSidebar() {
+  sidebarOpen.value = false
+}
+
+function toggleCarrito() {
+  carritoOpen.value = !carritoOpen.value
+}
+
+function closeCarrito() {
+  carritoOpen.value = false
+}
 
 // Definir colores y talles disponibles
 const colores = ["Rojo", "Azul", "Amarillo", "Verde"]
@@ -134,14 +183,6 @@ function agregarAlCarrito(index) {
   // Aquí iría la lógica para agregar al carrito real
 }
 
-/* OTROS */
-function toggleSidebar() {
-  sidebarOpen.value = !sidebarOpen.value
-}
-
-function closeSidebar() {
-  sidebarOpen.value = false
-}
 </script>
 
 <style>
@@ -192,7 +233,7 @@ function closeSidebar() {
   color: var(--lucybell-accent);
 }
 
-/* SIDEBAR */
+/* SIDEBARS */
 .sidebar {
   position: fixed;
   top: 0;
@@ -201,13 +242,26 @@ function closeSidebar() {
   height: 100%;
   background-color: var(--lucybell-bg);
   border-right: 2px solid var(--lucybell-accent);
-  transition: left 0.3s ease;
+  transition: left 0.3s ease, right 0.3s ease;
   z-index: 1051;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.05);
 }
 
 .sidebar.active {
   left: 0;
+}
+
+/* Sidebar por la derecha */
+.sidebar.derecha {
+  left: auto;
+  right: -260px;  /* cerrado por defecto */
+  border-left: 2px solid var(--lucybell-accent);
+  border-right: none;
+}
+
+/* Activar sidebar por la derecha */
+.sidebar.derecha.active {
+  right: 0;
 }
 
 .sidebar-title {
@@ -231,6 +285,14 @@ function closeSidebar() {
 
 .sidebar-link:hover {
   color: var(--lucybell-accent);
+}
+
+.sidebar[style*="right:0"] {
+  right: -260px;
+}
+
+.sidebar[style*="right:0"].active {
+  right: 0;
 }
 
 /* BUSCADOR */
@@ -412,5 +474,4 @@ footer {
   color: var(--lucybell-light);
   border-color: var(--lucybell-accent-dark);
 }
-
 </style>
