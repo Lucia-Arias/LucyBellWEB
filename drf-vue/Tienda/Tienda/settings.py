@@ -44,7 +44,8 @@ THIRD_APPS = [
 ]
 
 OWNS_APPS = [
-    'products'
+    'products',
+    'cart'
 ]
 
 INSTALLED_APPS = BASE_APPS + THIRD_APPS + OWNS_APPS
