@@ -80,7 +80,8 @@ class Product(models.Model):
     material = models.ForeignKey(Material, on_delete=models.SET_NULL, null=True, blank=True, related_name='get_products', verbose_name='Material')
     color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True, related_name='get_products', verbose_name='Color')
     talle = models.ForeignKey(Talle, on_delete=models.SET_NULL, null=True, blank=True, related_name='get_products', verbose_name='Talle')
-    fecha_creacion = models.DateTimeField(auto_now_add=True, default=timezone.now)
+    fecha_creacion = models.DateTimeField(default=timezone.now)
+
 
     class Meta:
         verbose_name = 'Producto'
