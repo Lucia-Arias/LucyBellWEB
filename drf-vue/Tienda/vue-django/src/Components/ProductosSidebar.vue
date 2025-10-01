@@ -20,17 +20,32 @@
 
       <h6 class="filter-title">Filtrar por categoría</h6>
       <ul class="list-unstyled">
-        <li><a href="#" class="sidebar-link" @click="$emit('close-sidebar')">Anillos</a></li>
-        <li><a href="#" class="sidebar-link" @click="$emit('close-sidebar')">Pulseras</a></li>
-        <li><a href="#" class="sidebar-link" @click="$emit('close-sidebar')">Collares</a></li>
+        <li><a href="#" class="sidebar-link" @click="$emit('close-sidebar')" v-for="category in categories" :key= "category.id">{{category.name}}</a></li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: "ProductosSidebar",
+  data(){
+    return{
+      categories:[]
+    }
+  },
+  mounted(){
+    axios.get('http://127.0.0.1:8000/api/categories/')
+    .then(response => {
+      this.categories = response.data
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  },
   props: {
     sidebarOpen: Boolean,
     searchQuery: String

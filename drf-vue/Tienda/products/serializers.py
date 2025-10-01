@@ -22,6 +22,8 @@ class TalleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
+    category_name = serializers.ReadOnlyField (source='category.name')
+    material_name = serializers.ReadOnlyField (source = 'material.name')
     # Campos de solo lectura para mostrar información relacionada
     category_name = serializers.CharField(source='category.name', read_only=True)
     material_name = serializers.CharField(source='material.name', read_only=True)
