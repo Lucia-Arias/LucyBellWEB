@@ -68,10 +68,26 @@ class Material(models.Model):
         return reverse('admin:products_material_change', args=[self.id])
 
 
+# Modelo para las imágenes del producto
+class ProductImage(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='images', verbose_name='Producto')
+    image = models.URLField(max_length=255, verbose_name='URL de la imagen')
+    order = models.PositiveIntegerField(default=0, verbose_name='Orden')
+    alt_text = models.CharField(max_length=255, blank=True, verbose_name='Texto alternativo')
+    
+    class Meta:
+        verbose_name = 'Imagen del producto'
+        verbose_name_plural = 'Imágenes del producto'
+        ordering = ['order', 'id']
+    
+    def __str__(self):
+        return f"Imagen de {self.product.name}"
+
+
 # Modelos de Productos
 class Product(models.Model):
     name = models.CharField(max_length=255, verbose_name='Nombre')
-    image = models.URLField(max_length=255)
+    # Removemos el campo image del modelo principal
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name='Categoría')
     description = models.TextField(verbose_name='Descripción', null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio')
@@ -82,7 +98,6 @@ class Product(models.Model):
     talle = models.ForeignKey(Talle, on_delete=models.SET_NULL, null=True, blank=True, related_name='get_products', verbose_name='Talle')
     fecha_creacion = models.DateTimeField(default=timezone.now)
 
-
     class Meta:
         verbose_name = 'Producto'
         verbose_name_plural = 'Productos'
@@ -90,6 +105,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def main_image(self):
+        """Devuelve la imagen principal (primera imagen ordenada)"""
+        first_image = self.images.first()
+        return first_image.image if first_image else None
+    
+    @property
+    def image_list(self):
+        """Devuelve lista de todas las URLs de imágenes"""
+        return [img.image for img in self.images.all()]
     
     @property
     def is_on_sale(self):

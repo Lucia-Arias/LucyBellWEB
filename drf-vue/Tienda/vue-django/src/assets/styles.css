@@ -11,14 +11,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Handlee&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* FONDO GENERAL */
+/* ===== ESTILOS GENERALES ===== */
 .app-container {
   min-height: 100vh;
   background-color: var(--lucybell-bg);
   font-family: 'Poppins', sans-serif;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .custom-header {
   background-color: var(--lucybell-bg);
   color: var(--lucybell-dark);
@@ -45,7 +45,7 @@
   color: var(--lucybell-accent);
 }
 
-/* SIDEBARS */
+/* ===== SIDEBARS ===== */
 .sidebar {
   position: fixed;
   top: 0;
@@ -107,7 +107,7 @@
   right: 0;
 }
 
-/* BUSCADOR */
+/* ===== BUSCADOR ===== */
 .search-box {
   border: 1px solid var(--lucybell-accent);
   border-radius: 8px;
@@ -120,7 +120,7 @@
   box-shadow: 0 0 8px rgba(156, 133, 201, 0.4);
 }
 
-/* OVERLAY */
+/* ===== OVERLAY ===== */
 .overlay {
   position: fixed;
   top: 0;
@@ -131,7 +131,7 @@
   z-index: 1050;
 }
 
-/* SECCIONES */
+/* ===== SECCIONES ===== */
 .section-title {
   font-weight: 600;
   color: var(--lucybell-dark);
@@ -139,19 +139,23 @@
   font-size: 2rem;
 }
 
+/* ===== CATÁLOGO Y PRODUCTOS ===== */
+
 /* CARD DE PRODUCTOS - ALTURA FIJA */
 .card-producto {
   background-color: var(--lucybell-accent);
   border-radius: 14px;
   border-bottom: 3px solid var(--lucybell-accent);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  height: 520px;
+  height: 580px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+  position: relative;
 }
 
 .card-producto:hover {
@@ -165,26 +169,33 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 12px;
+  height: 100%;
 }
 
+/* Contenedor de imagen */
 .producto-imagen-wrapper {
   position: relative;
   display: inline-block;
   width: 100%;
   margin-bottom: 15px;
   border-radius: 10px;
-  overflow: hidden; /* Elimina cualquier desbordamiento */
-  background-color: transparent; /* Sin fondo */
+  overflow: hidden;
+  background-color: transparent;
+  flex-shrink: 0;
 }
 
-.producto-imagen-wrapper img {
+/* Imágenes del producto */
+.producto-imagen-wrapper img,
+.carousel-image {
   width: 100%;
-  height: 250px; /* Más alto y vertical */
-  object-fit: cover; /* Llena el espacio sin bordes blancos */
+  height: 280px;
+  object-fit: cover;
   border-radius: 10px;
   display: block;
 }
 
+/* Etiqueta del producto */
 .producto-etiqueta {
   position: absolute;
   left: 10px;
@@ -196,48 +207,54 @@
   font-size: 0.85rem;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 }
 
+/* Nombre del producto */
 .producto-nombre {
   font-weight: 600;
   color: var(--lucybell-dark);
-  margin-bottom: 8px;
-  font-size: 1.2rem;
-  min-height: 50px;
+  margin-bottom: 6px;
+  font-size: 1.15rem;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1.3;
+  flex-shrink: 0;
 }
 
+/* Precio del producto */
 .producto-precio {
   color: var(--lucybell-dark);
-  margin-bottom: 15px;
-  font-size: 1.3rem;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
-/* Contenedor para selectores - altura mínima */
+/* ===== SELECTORES (COLORES Y TALLES) ===== */
 .selectores-container {
-  min-height: 80px;
+  min-height: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-/* Selección de color y talle - TAMAÑO ORIGINAL */
 .seleccion-container {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
 .seleccion-label {
   display: inline-block;
-  margin-right: 8px;
+  margin-right: 6px;
   font-weight: 600;
   color: var(--lucybell-dark);
-  font-size: 0.9rem;
-  margin-bottom: 5px;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
 }
 
 .seleccion-opciones {
@@ -251,12 +268,12 @@
   border: 1px solid var(--lucybell-dark);
   background-color: var(--lucybell-bg);
   color: var(--lucybell-dark);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   transition: 0.2s;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .seleccion-btn:hover {
@@ -269,18 +286,21 @@
   border-color: var(--lucybell-accent-dark);
 }
 
-/* Cantidad y agregar al carrito */
+/* ===== CANTIDAD Y BOTÓN COMPRAR ===== */
 .cantidad-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
-  margin-top: 15px;
+  margin-top: 12px;
+  flex-shrink: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(53, 46, 53, 0.1);
 }
 
 .btn-cantidad {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 6px;
   background-color: var(--lucybell-bg);
@@ -288,7 +308,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.2s ease;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .btn-cantidad:hover {
@@ -296,23 +316,25 @@
 }
 
 .cantidad {
-  min-width: 25px;
+  min-width: 22px;
   text-align: center;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .btn-comprar {
   background-color: var(--lucybell-bg);
   color: var(--lucybell-dark);
-  border-radius: 10px;
-  padding: 12px 20px;
+  border-radius: 8px;
+  padding: 10px 16px;
   border: none;
   cursor: pointer;
   font-weight: 600;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   box-shadow: 0 4px 12px rgba(156, 133, 201, 0.4);
-  font-size: 1rem;
+  font-size: 0.9rem;
+  flex: 1;
+  max-width: 140px;
 }
 
 .btn-comprar:hover {
@@ -334,7 +356,131 @@
   box-shadow: none;
 }
 
-/* FOOTER */
+/* ===== CARRUSEL DE IMÁGENES ===== */
+
+/* Contenedor del carrusel */
+.image-carousel {
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 280px;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+  display: block;
+}
+
+.carousel-image:hover {
+  opacity: 0.95;
+}
+
+/* Indicadores del carrusel */
+.carousel-indicators {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  z-index: 2;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.carousel-dot.active {
+  background-color: var(--lucybell-light);
+  transform: scale(1.2);
+}
+
+.carousel-dot:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Contador de imágenes */
+.image-counter {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(53, 46, 53, 0.7);
+  color: var(--lucybell-light);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  z-index: 2;
+}
+
+/* Flechas de navegación */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(53, 46, 53, 0.7);
+  color: var(--lucybell-light);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-arrow.prev {
+  left: 10px;
+}
+
+.carousel-arrow.next {
+  right: 10px;
+}
+
+.image-carousel:hover .carousel-arrow {
+  opacity: 1;
+}
+
+.carousel-arrow:hover {
+  background-color: rgba(53, 46, 53, 0.9);
+}
+
+/* Efectos de transición para cambio suave de imágenes */
+.carousel-image {
+  transition: opacity 0.4s ease-in-out;
+}
+
+/* ===== PLACEHOLDER SIN IMAGEN ===== */
+.no-image-placeholder {
+  width: 100%;
+  height: 280px;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #dee2e6;
+  border-radius: 0.375rem;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* ===== FOOTER ===== */
 footer {
   background-color: var(--lucybell-bg);
   color: var(--lucybell-dark);
@@ -343,4 +489,75 @@ footer {
   padding: 18px 0;
   margin-top: 30px;
   font-size: 1.1rem;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .card-producto {
+    margin-bottom: 20px;
+    height: 560px;
+  }
+  
+  .producto-imagen-wrapper img,
+  .carousel-image {
+    height: 260px;
+  }
+  
+  .image-carousel {
+    height: 260px;
+  }
+  
+  .carousel-arrow {
+    opacity: 1;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .image-counter {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 576px) {
+  .cantidad-container {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .btn-comprar {
+    min-width: 120px;
+    order: -1;
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Estados de hover mejorados */
+.card-producto:hover .carousel-image {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+/* Asegurar que el contenedor de la imagen mantenga sus dimensiones */
+.producto-imagen-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+/* Mantener la altura consistente con las imágenes únicas */
+.producto-imagen-wrapper img:not(.carousel-image) {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
 }

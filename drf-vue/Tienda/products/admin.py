@@ -1,11 +1,24 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Material, Product, Talle, Color, ProductoTalle, ProductoColor
+from .models import Category, Material, Product, Talle, Color, ProductoTalle, ProductoColor, ProductImage
 
 
 # -----------------------------
 # Inlines para Productos
 # -----------------------------
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ['image', 'order', 'alt_text', 'image_preview']
+    readonly_fields = ['image_preview']
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-height:50px; max-width:50px;" />', obj.image)
+        return "Sin imagen"
+    image_preview.short_description = 'Vista previa'
+
+
 class ProductoTalleInline(admin.TabularInline):
     model = ProductoTalle
     extra = 1
@@ -22,40 +35,46 @@ class ProductoColorInline(admin.TabularInline):
 # Admin para Product
 # -----------------------------
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'material', 'price', 'sale_price', 'total_stock', 'image_preview']
+    list_display = ['name', 'category', 'material', 'price', 'sale_price', 'total_stock', 'main_image_preview']
     list_filter = ['category', 'material']
     search_fields = ['name', 'description']
-    readonly_fields = ['total_stock_display', 'image_preview_large']
-
+    readonly_fields = ['total_stock_display', 'main_image_preview_large', 'profit_margin_display', 'fecha_creacion_display']
+    
     fieldsets = [
         ('Información Básica', {
-            'fields': ['name', 'category', 'material', 'description']
+            'fields': ['name', 'category', 'material', 'color', 'talle', 'description']
         }),
-        ('Precios y Stock', {
-            'fields': ['price', 'price_cost', 'sale_price']
+        ('Precios', {
+            'fields': ['price', 'price_cost', 'sale_price', 'profit_margin_display']
         }),
-        ('Imágenes', {
-            'fields': ['image', 'image_preview_large']
+        ('Imagen Principal', {
+            'fields': ['main_image_preview_large']
+        }),
+        ('Stock y Fechas', {
+            'fields': ['total_stock_display', 'fecha_creacion_display']
         }),
     ]
 
-    inlines = [ProductoTalleInline, ProductoColorInline]
-
+    inlines = [ProductImageInline, ProductoTalleInline, ProductoColorInline]
 
     # -----------------------------
-    # Métodos para imagen
+    # Métodos para imagen principal
     # -----------------------------
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" style="max-height:30px; max-width:30px;" />', obj.image)
+    def main_image_preview(self, obj):
+        """Vista previa pequeña para la lista de productos"""
+        main_image = obj.main_image
+        if main_image:
+            return format_html('<img src="{}" style="max-height:50px; max-width:50px;" />', main_image)
         return "Sin imagen"
-    image_preview.short_description = 'Imagen'
+    main_image_preview.short_description = 'Imagen Principal'
 
-    def image_preview_large(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" style="max-height:200px; max-width:200px;" />', obj.image)
-        return "Sin imagen"
-    image_preview_large.short_description = 'Vista previa'
+    def main_image_preview_large(self, obj):
+        """Vista previa grande para el formulario de edición"""
+        main_image = obj.main_image
+        if main_image:
+            return format_html('<img src="{}" style="max-height:200px; max-width:200px;" />', main_image)
+        return "No hay imagen principal"
+    main_image_preview_large.short_description = 'Vista previa de imagen principal'
 
     # -----------------------------
     # Stock total (talles + colores)
@@ -69,6 +88,20 @@ class ProductAdmin(admin.ModelAdmin):
     def total_stock_display(self, obj):
         return self.total_stock(obj)
     total_stock_display.short_description = 'Stock Total'
+
+    # -----------------------------
+    # Margen de ganancia
+    # -----------------------------
+    def profit_margin_display(self, obj):
+        return f"{obj.profit_margin:.2f}%"
+    profit_margin_display.short_description = 'Margen de Ganancia'
+
+    # -----------------------------
+    # Fecha de creación
+    # -----------------------------
+    def fecha_creacion_display(self, obj):
+        return obj.fecha_creacion.strftime("%d/%m/%Y %H:%M")
+    fecha_creacion_display.short_description = 'Fecha de Creación'
 
 
 # -----------------------------
@@ -112,6 +145,28 @@ class ColorAdmin(admin.ModelAdmin):
 
 
 # -----------------------------
+# Admin para ProductImage
+# -----------------------------
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ['product', 'image_preview', 'order', 'alt_text']
+    list_filter = ['product']
+    search_fields = ['product__name', 'alt_text']
+    readonly_fields = ['image_preview_large']
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-height:50px; max-width:50px;" />', obj.image)
+        return "Sin imagen"
+    image_preview.short_description = 'Vista previa'
+
+    def image_preview_large(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-height:200px; max-width:200px;" />', obj.image)
+        return "Sin imagen"
+    image_preview_large.short_description = 'Vista previa grande'
+
+
+# -----------------------------
 # Registro de modelos
 # -----------------------------
 admin.site.register(Product, ProductAdmin)
@@ -119,6 +174,7 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Material, MaterialAdmin)
 admin.site.register(Talle, TalleAdmin)
 admin.site.register(Color, ColorAdmin)
+admin.site.register(ProductImage, ProductImageAdmin)
 
 # Personalización del admin
 admin.site.site_header = 'Administración de LucyBell'
