@@ -13,12 +13,15 @@
           <div class="producto-contenido">
             <!-- Imagen y etiqueta con carrusel -->
             <div class="producto-imagen-wrapper">
+                
+              <span class="producto-etiqueta">{{product.category_name}} de {{ product.material_name }}</span>
+              
               <!-- Carrusel para múltiples imágenes -->
               <div v-if="hasMultipleImages(product)" class="image-carousel">
                 <img
                   :src="getImageUrl(getCurrentImage(product))"
                   :alt="getAltText(product, getCurrentImageIndex(product.id))"
-                  class="img-fluid mb-3 rounded carousel-image"
+                  class="img-fluid rounded carousel-image"
                   @error="handleImageError(product.id)"
                 />
                 
@@ -51,7 +54,7 @@
                 <img
                   :src="getImageUrl(getFirstImage(product))"
                   :alt="getAltText(product, 0)"
-                  class="img-fluid mb-3 rounded"
+                  class="img-fluid rounded"
                   @error="handleImageError(product.id)"
                 />
               </div>
@@ -61,26 +64,24 @@
                 <span>Sin imagen</span>
               </div>
               
-              <span class="producto-etiqueta">{{product.category_name}} de {{ product.material_name }}</span>
             </div>
             
             <!-- Nombre y precio -->
             <h5 class="producto-nombre">{{ product.name }}</h5>
             <p class="producto-precio">${{ product.price }}</p>
-
-            <!-- Contenedor para selectores -->
             <div class="selectores-container">
               <!-- Selección de color - Solo muestra si el producto tiene colores disponibles -->
               <div class="seleccion-container" v-if="product.colores_disponibles && product.colores_disponibles.length > 0">
                 <p class="seleccion-label">Color:</p>
                 <div class="seleccion-opciones">
                   <button
-                    v-for="(color, index) in product.colores_disponibles"
+                    v-for="(colorObj, index) in product.colores_disponibles"
                     :key="index"
-                    @click="seleccionarColor(product.id, color)"
-                    :class="['seleccion-btn', { 'activo': coloresSeleccionados[product.id] === color }]"
+                    @click="seleccionarColor(product.id, colorObj.color)"
+                    :class="['seleccion-btn', { 'activo': coloresSeleccionados[product.id] === colorObj.color }]"
+                    :title="`Stock: ${colorObj.stock}`"
                   >
-                    {{ color }}
+                    {{ colorObj.color }}
                   </button>
                 </div>
               </div>
@@ -90,12 +91,13 @@
                 <p class="seleccion-label">Talle:</p>
                 <div class="seleccion-opciones">
                   <button
-                    v-for="(talle, index) in product.talles_disponibles"
+                    v-for="(talleObj, index) in product.talles_disponibles"
                     :key="index"
-                    @click="seleccionarTalle(product.id, talle)"
-                    :class="['seleccion-btn', { 'activo': tallesSeleccionados[product.id] === talle }]"
+                    @click="seleccionarTalle(product.id, talleObj.talle)"
+                    :class="['seleccion-btn', { 'activo': tallesSeleccionados[product.id] === talleObj.talle }]"
+                    :title="`Stock: ${talleObj.stock}`"
                   >
-                    {{ talle }}
+                    {{ talleObj.talle }}
                   </button>
                 </div>
               </div>
@@ -198,6 +200,47 @@ const handleImageError = (productId) => {
   console.error(`Error cargando imagen para producto ${productId}`)
 }
 
+// Función auxiliar para obtener el stock disponible según las selecciones
+const getStockDisponible = (product) => {
+  const colorSeleccionado = props.coloresSeleccionados[product.id]
+  const talleSeleccionado = props.tallesSeleccionados[product.id]
+  
+  // Si no hay selecciones, retornar stock total
+  if (!colorSeleccionado && !talleSeleccionado) {
+    return product.stock_total || 0
+  }
+  
+  // Buscar combinación específica
+  if (colorSeleccionado && talleSeleccionado) {
+    // Aquí deberías tener lógica para buscar la combinación exacta
+    // Esto depende de cómo esté estructurado tu backend
+    return Math.min(
+      getStockPorColor(product, colorSeleccionado),
+      getStockPorTalle(product, talleSeleccionado)
+    )
+  }
+  
+  if (colorSeleccionado) {
+    return getStockPorColor(product, colorSeleccionado)
+  }
+  
+  if (talleSeleccionado) {
+    return getStockPorTalle(product, talleSeleccionado)
+  }
+  
+  return 0
+}
+
+const getStockPorColor = (product, color) => {
+  const colorObj = product.colores_disponibles.find(c => c.color === color)
+  return colorObj ? colorObj.stock : 0
+}
+
+const getStockPorTalle = (product, talle) => {
+  const talleObj = product.talles_disponibles.find(t => t.talle === talle)
+  return talleObj ? talleObj.stock : 0
+}
+
 const puedeAgregarAlCarrito = (product) => {
   const tieneColores = product.colores_disponibles && product.colores_disponibles.length > 0
   const tieneTalles = product.talles_disponibles && product.talles_disponibles.length > 0
@@ -208,7 +251,12 @@ const puedeAgregarAlCarrito = (product) => {
   if (tieneTalles && !props.tallesSeleccionados[product.id]) {
     return false
   }
-  return true
+  
+  // Verificar stock
+  const stockDisponible = getStockDisponible(product)
+  const cantidadActual = props.cantidades[product.id] || 0
+  
+  return stockDisponible > 0 && cantidadActual > 0 && cantidadActual <= stockDisponible
 }
 
 const siguienteImagen = (productId) => {
@@ -256,6 +304,8 @@ onMounted(async () => {
       console.log(`Producto ${product.id} - ${product.name}:`, {
         images: product.images,
         totalImages: product.images ? product.images.length : 0,
+        colores_disponibles: product.colores_disponibles,
+        talles_disponibles: product.talles_disponibles,
         imagesDetail: product.images ? product.images.map((img, idx) => ({
           index: idx,
           image: img.image,
@@ -274,74 +324,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-/* Solo estilos esenciales que no están en el CSS global */
-.no-image-placeholder {
-  width: 100%;
-  height: 280px; /* Actualizado para coincidir con la nueva altura */
-  background-color: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #dee2e6;
-  border-radius: 0.375rem;
-  color: #6c757d;
-  font-size: 0.9rem;
-}
-
-/* Asegurar que las imágenes mantengan la relación de aspecto */
-.producto-imagen-wrapper img {
-  object-fit: cover;
-}
-
-/* Estados específicos del componente */
-.image-carousel {
-  position: relative;
-}
-
-.carousel-image {
-  transition: opacity 0.3s ease;
-}
-
-/* Asegurar que todo el contenido quede dentro del card */
-.card-producto {
-  position: relative;
-}
-
-.producto-contenido {
-  height: 100%;
-}
-
-/* Responsive específico */
-@media (max-width: 768px) {
-  .card-producto {
-    margin-bottom: 20px;
-    height: 560px; /* Ligeramente más bajo en móviles si es necesario */
-  }
-  
-  .producto-imagen-wrapper img,
-  .carousel-image {
-    height: 260px; /* Ajuste para móviles */
-  }
-  
-  .image-carousel {
-    height: 260px;
-  }
-}
-
-/* Asegurar que los botones no se salgan en pantallas muy pequeñas */
-@media (max-width: 576px) {
-  .cantidad-container {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  
-  .btn-comprar {
-    min-width: 120px;
-    order: -1; /* Poner el botón primero en móviles */
-    width: 100%;
-    max-width: none;
-  }
-}
-</style>
